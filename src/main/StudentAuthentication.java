@@ -4,13 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * StudentAuthentication.java
- * Demonstrates how PreparedStatement securely authenticates a student.
- * Course: BIT 2203 - Advanced Programming
- *
- * @author Nyevu Chea
- */
+
 public class StudentAuthentication {
 
     // Database connection parameters
