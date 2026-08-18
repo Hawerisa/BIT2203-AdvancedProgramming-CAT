@@ -1,3 +1,5 @@
+package org.example;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,14 +15,12 @@ import java.sql.Statement;
  * 3. Inserts sample courses
  * 4. Retrieves and displays courses from Computer Science department
  *
- * @author Nyevu Chea
- * @registration SCT221-0595/2024
- * @date 2026-08-18
+ * @author Nyevu Chea (Reg: SCT221-0595/2024)
  */
 public class UniversityDatabase {
 
-    // Database credentials
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/university_db";
+    // Database credentials with safe SSL & public key parameters
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/university_db?useSSL=false&allowPublicKeyRetrieval=true";
     private static final String DB_USER = "admin";
     private static final String DB_PASSWORD = "secure123";
 
@@ -31,7 +31,7 @@ public class UniversityDatabase {
         System.out.println();
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            System.out.println("✅ Connected to database successfully!");
+            System.out.println(" Connected to database successfully!");
             System.out.println();
 
             // 1. Create the courses table
@@ -44,7 +44,7 @@ public class UniversityDatabase {
             displayComputerScienceCourses(conn);
 
         } catch (SQLException e) {
-            System.err.println("❌ Database Error: " + e.getMessage());
+            System.err.println(" Database Error: " + e.getMessage());
             System.err.println("Make sure MySQL is running and the database 'university_db' exists.");
         }
 
@@ -69,18 +69,20 @@ public class UniversityDatabase {
 
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
-            System.out.println("✅ Table 'courses' created successfully (or already exists).");
+            System.out.println(" Table 'courses' created successfully (or already exists).");
         }
         System.out.println();
     }
 
     /**
-     * Inserts sample courses into the courses table.
+     * Inserts sample courses into the courses table safely.
+     * Uses ON DUPLICATE KEY UPDATE so re-running the program won't trigger primary key errors.
      */
     public static void insertSampleCourses(Connection conn) throws SQLException {
         System.out.println("--- INSERTING SAMPLE COURSES ---");
 
-        String sql = "INSERT INTO courses (course_id, course_name, credits, department) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO courses (course_id, course_name, credits, department) VALUES (?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE course_name = VALUES(course_name), credits = VALUES(credits), department = VALUES(department)";
 
         // Sample course data
         Object[][] courses = {
@@ -101,7 +103,7 @@ public class UniversityDatabase {
                 pstmt.executeUpdate();
                 count++;
             }
-            System.out.println("✅ Inserted " + count + " sample courses.");
+            System.out.println(" Processed " + count + " sample courses into database.");
         }
         System.out.println();
     }
